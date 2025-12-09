@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AgriLink Ethiopia - Farmer Dashboard</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700&family=Roboto:wght@400;500&display=swap" rel="stylesheet">
+</head>
+<body class="dashboard farmer-dashboard">
+    <div class="dashboard-header">
+        <div class="welcome-message">
+            <h1 class="dashboard-title">👨‍🌾 Farmer Dashboard</h1>
+            <span class="welcome-badge">Welcome, User!</span>
+            <div class="farmer-rating" id="farmerRating" title="Average rating">
+                <!-- Filled dynamically: e.g. Rating: ★★★★☆ (4.3/5) -->
+            </div>
+        </div>
+        <a href="index.html" class="btn btn-small" style="background: #f44336; color: white;">Logout</a>
+    </div>
+
+    <!-- Market Prices Section -->
+    <div class="dashboard-section market-prices-section">
+        <h2 class="section-title">📊 Market Prices</h2>
+        <div class="market-controls" style="display:flex;align-items:center;gap:12px;margin-bottom:10px;">
+            <label for="rangeSelect" style="font-weight:600;color:#333;">Range</label>
+            <select id="rangeSelect" class="filter-select" style="max-width:120px;">
+                <option value="5">5 km</option>
+                <option value="10">10 km</option>
+                <option value="15">15 km</option>
+            </select>
+        </div>
+        <div id="marketPricesContainer" class="market-prices-container">
+            <!-- Market prices will be loaded here -->
+        </div>
+    </div>
+
+    <!-- Most In-Demand Products Section -->
+    <div class="dashboard-section most-demand-section">
+        <h2 class="section-title">🔥 Most In-Demand Products</h2>
+        <div id="mostDemandContainer" class="most-demand-container">
+            <!-- Most in-demand products will be loaded here -->
+        </div>
+    </div>
+
+    <!-- Add Product Section -->
+    <div class="dashboard-section">
+        <h2 class="section-title">Add New Product</h2>
+        <form id="addProductForm" class="login-form">
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="productName">Product Name</label>
+                    <input type="text" id="productName" name="productName" required placeholder="e.g., Tomato">
+                </div>
+                <div class="form-group">
+                    <label for="quantity">Quantity (kg)</label>
+                    <input type="number" id="quantity" name="quantity" required min="1" placeholder="e.g., 50">
+                </div>
+                <div class="form-group">
+                    <label for="price">Price per kg (ETB)</label>
+                    <input type="number" id="price" name="price" required min="0" step="0.01" placeholder="e.g., 30">
+                </div>
+                <div class="form-group">
+                    <label for="productImage">Product Image</label>
+                    <div class="image-upload-container">
+                        <input type="file" id="productImageUpload" name="productImageUpload" accept="image/*" onchange="handleImageUpload(event)">
+                        <label for="productImageUpload" class="image-upload-label">
+                            <span class="upload-icon">📷</span>
+                            <span class="upload-text">Choose Image or Select from Library</span>
+                        </label>
+                        <div id="imagePreview" class="image-preview" style="display: none;">
+                            <img id="previewImg" src="" alt="Preview">
+                            <button type="button" class="remove-image-btn" onclick="removeImagePreview()">&times;</button>
+                        </div>
+                        <select id="productImage" name="productImage" class="image-select" onchange="handleImageSelect(event)">
+                            <option value="">Or select from library</option>
+                            <option value="tomato.jpg">Tomato 🍅</option>
+                            <option value="pottato.jpg">Potato 🥔</option>
+                            <option value="carrot.jpg">Carrot 🥕</option>
+                            <option value="onion.jpg">Onion 🧅</option>
+                            <option value="apple.jpg">Apple 🍎</option>
+                            <option value="avacado.jpg">Avocado 🥑</option>
+                            <option value="pepper.jpg">Pepper 🌶️</option>
+                            <option value="teff.jpg">Teff 🌾</option>
+                            <option value="wheat.jpg">Wheat 🌾</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <button type="submit" class="btn btn-primary btn-farmer">Add Product</button>
+        </form>
+    </div>
+
+    <!-- Inventory Section -->
+    <div class="dashboard-section">
+        <h2 class="section-title">My Inventory</h2>
+        <div class="search-filter-bar">
+            <input type="text" id="searchProducts" class="search-input" placeholder="Search products...">
+            <select id="sortProducts" class="filter-select">
+                <option value="">Sort by...</option>
+                <option value="name">Name (A-Z)</option>
+                <option value="quantity">Quantity (High to Low)</option>
+            </select>
+        </div>
+        <div id="inventoryList" class="inventory-list">
+            <!-- Products will be loaded here -->
+        </div>
+    </div>
+
+    <!-- Orders Received Section -->
+    <div class="dashboard-section">
+        <h2 class="section-title">Orders Received</h2>
+        <div id="ordersList" class="orders-list">
+            <!-- Orders will be loaded here -->
+        </div>
+    </div>
+
+    <script src="js/script.js"></script>
+</body>
+</html>
+
