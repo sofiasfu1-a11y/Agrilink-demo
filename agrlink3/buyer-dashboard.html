@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AgriLink Ethiopia - Buyer Dashboard</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700&family=Roboto:wght@400;500&display=swap" rel="stylesheet">
+</head>
+<body class="dashboard buyer-dashboard">
+    <div class="dashboard-header">
+        <div class="welcome-message">
+            <h1 class="dashboard-title">🛒 Buyer Dashboard</h1>
+            <span class="welcome-badge">Welcome, User!</span>
+        </div>
+        <a href="index.html" class="btn btn-small" style="background: #f44336; color: white;">Logout</a>
+    </div>
+
+    <!-- Product Browsing Section -->
+    <div class="dashboard-section">
+        <h2 class="section-title">Browse Products</h2>
+        <div class="search-filter-bar">
+            <select id="filterProducts" class="filter-select">
+                <option value="all">All Products</option>
+                <option value="vegetables">Vegetables</option>
+                <option value="fruits">Fruits</option>
+                <option value="grains">Grains</option>
+            </select>
+            <select id="sortBuyerProducts" class="filter-select">
+                <option value="">Sort by...</option>
+                <option value="price-low">Price (Low to High)</option>
+                <option value="price-high">Price (High to Low)</option>
+                <option value="quantity">Quantity (High to Low)</option>
+            </select>
+        </div>
+        <div id="productsGrid" class="products-grid">
+            <!-- Products will be loaded here -->
+        </div>
+    </div>
+
+    <!-- Shopping Cart Section -->
+    <div class="cart-section">
+        <h2 class="section-title">Shopping Cart</h2>
+        <div id="cartItems">
+            <!-- Cart items will be loaded here -->
+        </div>
+        <div class="cart-total">
+            <span class="total-label">Total:</span>
+            <span class="total-amount" id="cartTotal">ETB 0</span>
+        </div>
+        <button class="btn btn-primary btn-buyer" onclick="showPaymentModal()" style="width: 100%; margin-top: 20px;">
+            Checkout
+        </button>
+    </div>
+
+    <!-- Payment Modal -->
+    <div id="paymentModal" class="payment-modal">
+        <div class="payment-modal-content">
+            <div class="payment-modal-header">
+                <h2 class="payment-modal-title">💳 Payment</h2>
+                <button class="payment-modal-close" onclick="closePaymentModal()">&times;</button>
+            </div>
+            <div class="payment-modal-body">
+                <div class="payment-summary">
+                    <h3>Order Summary</h3>
+                    <div id="paymentCartItems"></div>
+                    <div class="payment-total">
+                        <span>Total Amount:</span>
+                        <span id="paymentTotal">ETB 0</span>
+                    </div>
+                </div>
+                <div class="payment-form">
+                    <h3>Payment Details</h3>
+                    <div class="payment-form-group">
+                        <label for="accountNumber">Account Number</label>
+                        <input type="text" id="accountNumber" class="payment-input" placeholder="Enter your account number" maxlength="16">
+                    </div>
+                    <div class="payment-form-group">
+                        <label for="passcode">Passcode / PIN</label>
+                        <input type="password" id="passcode" class="payment-input" placeholder="Enter your passcode" maxlength="6">
+                    </div>
+                </div>
+                <div class="payment-actions">
+                    <button id="simulatePaymentBtn" class="btn btn-primary btn-buyer btn-payment" onclick="simulatePayment()">
+                        <span class="payment-btn-text">💳 Simulate Payment</span>
+                        <span class="payment-btn-loading" style="display: none;">Processing...</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Order Tracking Section -->
+    <div class="dashboard-section">
+        <h2 class="section-title">My Orders</h2>
+        <div id="buyerOrdersList" class="orders-list">
+            <!-- Orders will be loaded here -->
+        </div>
+    </div>
+
+    <!-- Rating Modal (shown after checkout) -->
+    <div id="ratingModal" class="modal" aria-hidden="true" style="display:none;">
+        <div class="modal-content" style="max-width:500px;position:relative;">
+            <button class="modal-close" id="ratingModalClose">×</button>
+            <h2 id="ratingModalTitle">Rate the Farmer</h2>
+            <p id="ratingModalSubtitle">How would you rate <span id="ratingFarmerName"></span>?</p>
+
+            <div id="starRating" class="star-rating" data-rating="0" style="font-size:28px; text-align:center; margin:12px 0;">
+                <span class="star" data-value="1">☆</span>
+                <span class="star" data-value="2">☆</span>
+                <span class="star" data-value="3">☆</span>
+                <span class="star" data-value="4">☆</span>
+                <span class="star" data-value="5">☆</span>
+            </div>
+
+            <div style="text-align:center;margin-top:8px;">
+                <button id="submitRatingBtn" class="btn btn-primary">Submit Rating</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/script.js"></script>
+</body>
+</html>
+
