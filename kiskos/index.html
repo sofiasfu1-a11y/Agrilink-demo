@@ -1,0 +1,254 @@
+<!doctype html>
+<html lang="am">
+<head>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+	<title>AgriLink</title>
+	<style>
+		:root{
+			--bg:#eaf6ea;
+			--green:#2e8b57;
+			--accent:#4caf50;
+			--muted:#2f6b3a;
+			--glass: rgba(255,255,255,0.9);
+			--card:#ffffff;
+		}
+		html,body{height:100%;margin:0;font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Noto Sans', 'Helvetica Neue', Arial;}
+		body{background:linear-gradient(180deg,var(--bg),#ddf0dd);display:flex;align-items:center;justify-content:center;overflow:hidden}
+		.kiosk{width:100vw;height:100vh;display:flex;flex-direction:column;align-items:stretch}
+		header{height:80px;display:flex;align-items:center;justify-content:center;font-size:32px;font-weight:700;color:var(--muted)}
+		main{flex:1;display:flex;align-items:center;justify-content:center;padding:18px}
+		.screen{width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding:18px;box-sizing:border-box}
+		.hidden{display:none}
+		.center{align-items:center;justify-content:center}
+
+		/* Big buttons */
+		.btn-large{background:linear-gradient(180deg,var(--accent),var(--green));color:white;border:none;padding:22px 32px;border-radius:18px;font-size:28px;font-weight:700;box-shadow:0 10px 30px rgba(46,139,87,0.25);min-width:260px;text-align:center;cursor:pointer}
+		.btn-large:active{transform:translateY(2px)}
+		.btn-glow{box-shadow:0 6px 30px rgba(76,175,80,0.35),0 0 18px rgba(76,175,80,0.18) inset}
+		.menu-grid{display:flex;flex-direction:column;gap:18px;align-items:center;margin-top:40px}
+
+		/* Passcode */
+		.passcard{background:var(--card);border-radius:18px;padding:28px;box-shadow:0 8px 24px rgba(0,0,0,0.08);display:flex;flex-direction:column;align-items:center;gap:16px}
+		.label{font-size:20px;color:var(--muted);font-weight:700}
+		input[type=tel]{font-size:32px;padding:12px 18px;border-radius:12px;border:2px solid rgba(0,0,0,0.06);width:220px;text-align:center}
+
+		/* Crop cards */
+		.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px;width:100%;max-width:980px;margin-top:18px}
+		.card{background:var(--card);border-radius:14px;padding:18px;display:flex;flex-direction:column;gap:8px;cursor:pointer;box-shadow:0 8px 20px rgba(0,0,0,0.06);border-left:6px solid var(--accent)}
+		.card h3{margin:0;font-size:20px}
+		.card .price{font-weight:700;color:var(--muted)}
+
+		/* Sell details */
+		.form{display:flex;flex-direction:column;gap:12px;width:100%;max-width:520px;margin-top:18px}
+		.form input{font-size:20px;padding:12px;border-radius:10px;border:2px solid rgba(0,0,0,0.06)}
+		.muted-sm{Color:#466f51;font-weight:700}
+
+		/* Balance/history */
+		.balance-card{background:var(--card);padding:18px;border-radius:14px;box-shadow:0 8px 20px rgba(0,0,0,0.06);max-width:720px;width:100%}
+		.history{margin-top:12px;display:flex;flex-direction:column;gap:8px}
+		.history-item{display:flex;justify-content:space-between;background:linear-gradient(180deg,#fff,#f6fff6);padding:10px;border-radius:8px}
+
+		/* Market news */
+		.news{display:flex;gap:12px;width:100%;max-width:980px;margin-top:18px}
+		.news .col{flex:1;background:var(--card);padding:16px;border-radius:12px;box-shadow:0 8px 20px rgba(0,0,0,0.06)}
+
+		/* Top bar small nav */
+		.bar{position:absolute;left:12px;top:12px}
+		.back-btn{background:transparent;border:2px solid rgba(76,175,80,0.12);padding:10px 14px;border-radius:10px;font-weight:700;color:var(--muted);cursor:pointer}
+
+		/* Confirmation modal */
+		.modal{position:fixed;left:0;top:0;width:100vw;height:100vh;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.25);}
+		.modal .box{background:var(--card);padding:26px;border-radius:14px;max-width:420px;text-align:center}
+
+		@media (max-width:520px){
+			header{font-size:24px}
+			.btn-large{font-size:22px;padding:18px;min-width:200px}
+			.cards{grid-template-columns:1fr}
+		}
+	</style>
+</head>
+<body>
+	<div class="kiosk" role="application">
+		<header>AgriLink</header>
+
+		<main>
+			<!-- Passcode Screen -->
+			<section id="passcode" class="screen center">
+				<div class="passcard center">
+					<div class="label">የይለፍ ቃል</div>
+					<input id="passcodeInput" type="tel" inputmode="numeric" autocomplete="one-time-code" maxlength="4" pattern="[0-9]*" aria-label="passcode" placeholder="0000">
+					<div class="muted-sm">እባክዎ 4 ቁጥር ያስገቡ</div>
+				</div>
+			</section>
+
+			<!-- Main Menu -->
+			<section id="menu" class="screen hidden center">
+				<div class="bar"><button class="back-btn" onclick="showScreen('passcode')">ወደ ይለፍ ገጽ</button></div>
+				<div style="margin-top:30px;text-align:center;">
+					<div style="font-size:24px;font-weight:800;color:var(--muted)">መነሻ ማውጫ</div>
+					<div class="menu-grid">
+						<button class="btn-large btn-glow" onclick="showScreen('sell-select')">መሸጥ</button>
+						<button class="btn-large btn-glow" onclick="showScreen('news')">ገበያ ዜና</button>
+						<button class="btn-large btn-glow" onclick="showScreen('balance')">ቀሪ ሂሳብ / ታሪክ</button>
+					</div>
+				</div>
+			</section>
+
+			<!-- Sell Selection -->
+			<section id="sell-select" class="screen hidden">
+				<div class="bar"><button class="back-btn" onclick="showScreen('menu')">መናሽ</button></div>
+				<h2 style="margin-top:12px">የእርሻ ምርት ዓይነት</h2>
+				<div class="cards" id="cropCards">
+					<!-- cards generated by JS fallback static provided -->
+					<div class="card" onclick="selectCrop('ጤፍ',3200)">
+						<h3>ጤፍ</h3>
+						<div class="price">3,200 ብር (Average)</div>
+					</div>
+					<div class="card" onclick="selectCrop('ቲማቲም',1800)">
+						<h3>ቲማቲም</h3>
+						<div class="price">1,800 ብር (Average)</div>
+					</div>
+					<div class="card" onclick="selectCrop('ሽንኩርት',2100)">
+						<h3>ሽንኩርት</h3>
+						<div class="price">2,100 ብር (Average)</div>
+					</div>
+					<div class="card" onclick="selectCrop('ድንች',1500)">
+						<h3>ድንች</h3>
+						<div class="price">1,500 ብር (Average)</div>
+					</div>
+					<div class="card" onclick="selectCrop('ሙዝ',1700)">
+						<h3>ሙዝ</h3>
+						<div class="price">1,700 ብር (Average)</div>
+					</div>
+					<div class="card" onclick="selectCrop('አቫካዶ',2500)">
+						<h3>አቫካዶ</h3>
+						<div class="price">2,500 ብር (Average)</div>
+					</div>
+				</div>
+			</section>
+
+			<!-- Sell Details -->
+			<section id="sell-details" class="screen hidden center">
+				<div class="bar"><button class="back-btn" onclick="showScreen('sell-select')">የሰራ</button></div>
+				<h2 id="sellCropName" style="margin-top:12px">ምርት</h2>
+				<div class="form">
+					<label class="muted-sm">መጠን (Amount)</label>
+					<input id="sellAmount" type="number" min="1" placeholder="የሚሸጥ ብዛት">
+					<label class="muted-sm">ዋጋ (Price)</label>
+					<input id="sellPrice" type="number" min="0" placeholder="ብር">
+					<button id="confirmSell" class="btn-large btn-glow" onclick="confirmSell()">አረጋግጥ</button>
+				</div>
+			</section>
+
+			<!-- Balance / History -->
+			<section id="balance" class="screen hidden center">
+				<div class="bar"><button class="back-btn" onclick="showScreen('menu')">መነሻ</button></div>
+				<h2 style="margin-top:12px">እስከ አሁን ተሽጧል</h2>
+				<div class="balance-card">
+					<div style="font-weight:800">ጠቅላላ ገቢ: <span style="color:var(--green)">12,500 ብር</span></div>
+					<div class="history">
+						<div class="history-item"><div>ጤፍ</div><div>10 kg</div><div>3,200 ብር</div></div>
+						<div class="history-item"><div>ቲማቲም</div><div>5 kg</div><div>1,800 ብር</div></div>
+						<div class="history-item"><div>ሙዝ</div><div>8 bunch</div><div>1,700 ብር</div></div>
+					</div>
+				</div>
+			</section>
+
+			<!-- Market News -->
+			<section id="news" class="screen hidden">
+				<div class="bar"><button class="back-btn" onclick="showScreen('menu')">መነሻ</button></div>
+				<h2 style="margin-top:12px">ገበያ ዜና</h2>
+				<div class="news">
+					<div class="col">
+						<h3>በጣም ታዋቂ ምርት</h3>
+						<div style="font-size:22px;font-weight:900;margin-top:18px;color:var(--muted)">ጤፍ</div>
+						<div class="muted-sm" style="margin-top:8px">(Most in demand today)</div>
+					</div>
+					<div class="col">
+						<h3>የገበያ ዋጋዎች</h3>
+						<div style="margin-top:12px;display:flex;flex-direction:column;gap:8px">
+							<div>ጤፍ — 3,200 ብር</div>
+							<div>ቲማቲም — 1,800 ብር</div>
+							<div>ሽንኩርት — 2,100 ብር</div>
+							<div>ድንች — 1,500 ብር</div>
+							<div>ሙዝ — 1,700 ብር</div>
+							<div>አቫካዶ — 2,500 ብር</div>
+						</div>
+					</div>
+				</div>
+			</section>
+
+		</main>
+	</div>
+
+	<!-- Confirmation modal (hidden initially) -->
+	<div id="modal" class="modal hidden" role="dialog" aria-hidden="true">
+		<div class="box">
+			<div id="modalMsg" style="font-size:20px;font-weight:800">ምርትዎ በገበያ ተመዝግቧል</div>
+			<div style="margin-top:16px"><button class="btn-large" onclick="closeModal()">ወደ መነሻ ገጽ ተመለስ</button></div>
+		</div>
+	</div>
+
+	<script>
+		// Simple SPA navigation
+		const screens = Array.from(document.querySelectorAll('.screen'));
+		function showScreen(id){
+			screens.forEach(s=>s.classList.add('hidden'));
+			const el = document.getElementById(id);
+			if(el) el.classList.remove('hidden');
+		}
+
+		// Start at passcode
+		showScreen('passcode');
+
+		// Passcode input behavior
+		const passInput = document.getElementById('passcodeInput');
+		passInput.addEventListener('input', (e)=>{
+			// keep only digits
+			e.target.value = e.target.value.replace(/\D/g,'').slice(0,4);
+			if(e.target.value.length === 4){
+				setTimeout(()=>{
+					showScreen('menu');
+					e.target.value='';
+				},200);
+			}
+		});
+
+		// Crop selection handler
+		function selectCrop(name,price){
+			document.getElementById('sellCropName').textContent = name;
+			const priceInput = document.getElementById('sellPrice');
+			priceInput.value = price;
+			document.getElementById('sellAmount').value = '';
+			showScreen('sell-details');
+		}
+
+		// Confirm sell
+		function confirmSell(){
+			const crop = document.getElementById('sellCropName').textContent;
+			const amount = document.getElementById('sellAmount').value||'0';
+			const price = document.getElementById('sellPrice').value||'0';
+			// For demo we just show a confirmation modal
+			document.getElementById('modalMsg').textContent = 'ምርትዎ በገበያ ተመዝግቧል';
+			const modal = document.getElementById('modal');
+			modal.classList.remove('hidden');
+			modal.style.display = 'flex';
+			modal.setAttribute('aria-hidden','false');
+		}
+		function closeModal(){
+			const modal = document.getElementById('modal');
+			modal.classList.add('hidden');
+			modal.style.display='none';
+			modal.setAttribute('aria-hidden','true');
+			showScreen('menu');
+		}
+
+		// Optional: keyboard shortcuts for quick testing
+		document.addEventListener('keydown',(e)=>{
+			if(e.key==='Escape') showScreen('menu');
+		});
+	</script>
+</body>
+</html>
+
