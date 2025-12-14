@@ -1,0 +1,337 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<title>AgriLink – Delivery Agent & Admin (Demo)</title>
+		<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+		<style>
+			:root{
+				--bg-0: #071023;
+				--bg-1: linear-gradient(135deg,#081226 0%, #071023 50%, #081826 100%);
+				--card: rgba(255,255,255,0.04);
+				--glass: rgba(255,255,255,0.03);
+				--primary: #00ff7a; /* neon green */
+				--accent: #7ae7ff; /* light blue */
+				--yellow: #ffd24a;
+				--purple: #b78bff;
+				--green: #4ade80;
+				--darkgreen: #0b6b3a;
+				--muted: rgba(255,255,255,0.65);
+				--glass-border: rgba(255,255,255,0.06);
+				--shadow: 0 8px 30px rgba(2,8,23,0.6);
+				--radius: 14px;
+			}
+
+			*{box-sizing:border-box}
+			html,body{height:100%}
+			body{
+				margin:0; padding:24px; font-family:Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+				background: radial-gradient(1200px 600px at 10% 10%, rgba(0,255,122,0.06), transparent), var(--bg-1);
+				color:#eafaf1; -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;
+				display:flex; align-items:flex-start; justify-content:center;
+			}
+
+			.wrap{width:100%; max-width:920px; display:flex; gap:18px}
+
+			/* Left column (Agent) */
+			.col{flex:1}
+			.panel{border-radius:12px; padding:14px; background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01)); border:1px solid var(--glass-border); box-shadow:var(--shadow)}
+
+			header.app-header{display:flex; align-items:center; gap:12px; margin-bottom:18px}
+			.logo{width:46px; height:46px; border-radius:10px; background:linear-gradient(135deg,var(--primary),#00ffd0); display:flex; align-items:center; justify-content:center;}
+			.title{font-weight:700; font-size:15px}
+			.subtitle{font-size:12px; color:var(--muted)}
+
+			.top-actions{display:flex; gap:8px}
+			.nav-btn{background:transparent; border:1px solid var(--glass-border); padding:8px 10px; border-radius:10px; color:var(--muted); cursor:pointer}
+			.nav-btn.active{border-color:rgba(255,255,255,0.12); box-shadow:0 8px 28px rgba(0,0,0,0.6); color:#fff}
+
+			.agent-hero{display:flex; align-items:center; gap:12px}
+			.avatar{width:64px; height:64px; border-radius:12px; background:linear-gradient(135deg,#083 20%, #03f 100%); display:flex;align-items:center;justify-content:center;color:#021; font-weight:700; font-size:20px}
+
+			.big-cta{display:block; margin-top:12px; width:100%; background:linear-gradient(90deg,var(--primary), #6effc9); color:#042014; text-align:center; padding:14px 12px; border-radius:12px; font-weight:800; cursor:pointer}
+
+			.orders{display:flex; flex-direction:column; gap:12px; margin-top:12px}
+			.order-card{padding:12px; border-radius:12px; background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.04)); border:1px solid rgba(255,255,255,0.03); box-shadow:0 12px 30px rgba(2,8,23,0.6); transition:transform .18s ease}
+			.order-card:hover{transform:translateY(-6px)}
+
+			.row{display:flex; align-items:center; justify-content:space-between}
+			.muted{color:var(--muted); font-size:13px}
+
+			.small-badge{font-weight:700; padding:6px 8px; border-radius:10px; font-size:12px}
+			.status-pending{background:linear-gradient(90deg, rgba(255,210,74,0.08), rgba(122,231,255,0.02)); color:var(--yellow);}
+			.status-picked{background:linear-gradient(90deg, rgba(122,231,255,0.05), rgba(0,0,0,0.02)); color:var(--accent);}
+			.status-agent{background:linear-gradient(90deg, rgba(183,139,255,0.06), rgba(0,0,0,0.02)); color:var(--purple)}
+			.status-released{background:linear-gradient(90deg, rgba(74,222,128,0.06), rgba(0,0,0,0.02)); color:var(--green)}
+			.status-delivered{background:linear-gradient(90deg, rgba(11,107,58,0.08), rgba(0,0,0,0.02)); color:var(--darkgreen)}
+
+			.btn{padding:8px 12px; border-radius:10px; border:0; cursor:pointer; font-weight:700}
+			.btn-glow{background:linear-gradient(90deg,var(--accent), #aef6ff); color:#012}
+			.btn-primary{background:linear-gradient(90deg,var(--primary), #9bffcf); color:#042014}
+			.btn-disabled{opacity:0.45; cursor:not-allowed}
+
+			/* Right column (Admin) */
+			.admin-header{display:flex; align-items:center; justify-content:space-between; gap:8px}
+			.admin-list{display:flex; flex-direction:column; gap:10px; margin-top:12px}
+			.admin-card{padding:10px; border-radius:10px; background:linear-gradient(180deg, rgba(255,255,255,0.015), rgba(255,255,255,0.01)); border:1px solid rgba(255,255,255,0.03)}
+
+			.payment-history{margin-top:12px}
+
+			/* Stepper */
+			.stepper{display:flex; gap:8px; align-items:center; margin-top:10px}
+			.step{flex:1; padding:8px; border-radius:10px; text-align:center; font-weight:700; font-size:12px; color:#041; background:rgba(255,255,255,0.02)}
+			.step.pending{background:linear-gradient(90deg, rgba(255,210,74,0.08), rgba(255,255,255,0.01)); color:var(--yellow)}
+			.step.picked{background:linear-gradient(90deg, rgba(122,231,255,0.06), rgba(255,255,255,0.01)); color:var(--accent)}
+			.step.agent{background:linear-gradient(90deg, rgba(183,139,255,0.06), rgba(255,255,255,0.01)); color:var(--purple)}
+			.step.released{background:linear-gradient(90deg, rgba(74,222,128,0.06), rgba(255,255,255,0.01)); color:var(--green)}
+			.step.delivered{background:linear-gradient(90deg, rgba(11,107,58,0.06), rgba(255,255,255,0.01)); color:var(--darkgreen)}
+
+			/* Notification */
+			.notify{position:fixed; right:20px; top:20px; min-width:260px; padding:12px 14px; border-radius:12px; background:linear-gradient(90deg,#fff,#f2f2ff); color:#023; box-shadow:0 12px 36px rgba(0,0,0,0.5); display:none}
+
+			@media(max-width:900px){ .wrap{flex-direction:column; max-width:420px} }
+		</style>
+	</head>
+	<body>
+		<div style="width:100%; max-width:1200px;">
+			<header class="app-header">
+				<div class="logo">AL</div>
+				<div style="flex:1">
+					<div class="title">AgriLink – Demo: Agent + Admin</div>
+					<div class="subtitle">Simulated secure payment flow • Buyer → AgriLink → Farmer</div>
+				</div>
+				<div class="top-actions">
+					<button id="show-agent" class="nav-btn active">Agent Panel</button>
+					<button id="show-admin" class="nav-btn">Admin Panel</button>
+				</div>
+			</header>
+
+			<div class="wrap">
+				<!-- Agent Column -->
+				<div class="col">
+					<div id="agent-panel" class="panel">
+						<div class="agent-hero">
+							<div class="avatar">JD</div>
+							<div>
+								<div style="font-weight:800">John Delivery</div>
+								<div class="muted">Delivery Agent • Available</div>
+							</div>
+							<div style="margin-left:auto">
+								<button id="reset" class="nav-btn">Reset Demo</button>
+							</div>
+						</div>
+
+						<div style="margin-top:12px; display:flex; gap:8px">
+							<button id="view-pending" class="btn btn-glow">Pending Orders</button>
+							<button id="view-completed" class="btn">Completed</button>
+						</div>
+
+						<div id="orders-area" class="orders">
+							<!-- Orders inserted by JS -->
+						</div>
+					</div>
+				</div>
+
+				<!-- Admin Column -->
+				<div class="col">
+					<div id="admin-panel" class="panel" style="display:none">
+						<div class="admin-header">
+							<div>
+								<div style="font-weight:800">Admin Dashboard</div>
+								<div class="muted">Authorize payments to farmers</div>
+							</div>
+							<div style="text-align:right">
+								<div style="font-weight:700">Admin</div>
+								<div class="muted">Finance • AgriLink</div>
+							</div>
+						</div>
+
+						<div style="margin-top:12px">
+							<div style="font-weight:700">Pending Authorizations</div>
+							<div id="admin-pending" class="admin-list">
+								<!-- Admin pending orders go here -->
+							</div>
+						</div>
+
+						<div class="payment-history">
+							<div style="font-weight:700; margin-top:12px">Payment History</div>
+							<div id="payment-history" style="margin-top:8px">
+								<!-- history entries -->
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div id="notify" class="notify"></div>
+		</div>
+
+		<script>
+			// Mock orders with payment states
+			const initialOrders = [
+				{ id:'ORD-201', crop:'Tomatoes', qty:'120 kg', pickup:'Green Farm', delivery:'City Market 7', farmer:{name:'Farmer Ali',phone:'+1 555-0132'}, buyer:{name:'Buyer A', phone:'+1 555-1001'}, price:'$240', status:'pending', paymentState:'held', completedAt:null },
+				{ id:'ORD-202', crop:'Mangoes', qty:'40 crates', pickup:'Sunny Orchard', delivery:'Premium Grocery', farmer:{name:'Farmer Nisha',phone:'+1 555-0482'}, buyer:{name:'Buyer B', phone:'+1 555-2002'}, price:'$520', status:'pending', paymentState:'held', completedAt:null }
+			];
+
+			let orders = [];
+			let paymentHistory = [];
+
+			// UI refs
+			const ordersArea = document.getElementById('orders-area');
+			const adminPanel = document.getElementById('admin-panel');
+			const agentPanel = document.getElementById('agent-panel');
+			const adminPending = document.getElementById('admin-pending');
+			const paymentHistoryEl = document.getElementById('payment-history');
+			const notify = document.getElementById('notify');
+
+			// navigation
+			document.getElementById('show-admin').addEventListener('click', ()=>{ document.getElementById('show-admin').classList.add('active'); document.getElementById('show-agent').classList.remove('active'); adminPanel.style.display='block'; agentPanel.style.display='none';});
+			document.getElementById('show-agent').addEventListener('click', ()=>{ document.getElementById('show-agent').classList.add('active'); document.getElementById('show-admin').classList.remove('active'); adminPanel.style.display='none'; agentPanel.style.display='block';});
+
+			document.getElementById('reset').addEventListener('click', init);
+
+			function init(){
+				orders = JSON.parse(JSON.stringify(initialOrders)); paymentHistory = []; renderAgentOrders(); renderAdmin(); renderHistory(); hideNotify();
+			}
+
+			function renderAgentOrders(){
+				ordersArea.innerHTML='';
+				orders.forEach(o=>{
+					const el = document.createElement('div'); el.className='order-card';
+					el.innerHTML = `
+						<div class="row"><div style="font-weight:800">${o.crop}</div><div class="small-badge ${statusClass(o)}">${displayStatus(o)}</div></div>
+						<div class="muted">${o.qty} • Pickup: ${o.pickup}</div>
+						<div class="muted">Delivery: ${o.delivery}</div>
+						<div style="display:flex; gap:8px; margin-top:8px">
+							<button class="btn btn-primary" data-action="pickup" data-id="${o.id}">Picked Up from Farmer</button>
+							<button class="btn btn-glow" data-action="agent-verify" data-id="${o.id}">Confirm Payment Delivery</button>
+							<button class="btn" data-action="deliver" data-id="${o.id}">Delivered to Buyer</button>
+							<div style="flex:1"></div><div class="muted">${o.id}</div>
+						</div>
+						<div class="stepper">
+							<div class="step ${stepClass(o,'pending')}">Picked Up</div>
+							<div class="step ${stepClass(o,'agent')}">Agent Confirmed</div>
+							<div class="step ${stepClass(o,'released')}">Admin Authorized</div>
+							<div class="step ${stepClass(o,'delivered')}">Delivered</div>
+						</div>
+					`;
+					ordersArea.appendChild(el);
+				});
+
+				// attach action handlers
+				ordersArea.querySelectorAll('button[data-action]').forEach(btn=>{
+					btn.addEventListener('click', (e)=>{
+						const id = e.currentTarget.dataset.id; const action = e.currentTarget.dataset.action; handleAgentAction(id, action);
+					});
+				});
+
+				updateAgentButtonsState();
+			}
+
+			function statusClass(o){
+				if(o.paymentState==='agent_verified') return 'status-agent';
+				if(o.paymentState==='released') return 'status-released';
+				if(o.status==='picked') return 'status-picked';
+				if(o.status==='delivered') return 'status-delivered';
+				return 'status-pending';
+			}
+
+			function displayStatus(o){
+				if(o.paymentState==='agent_verified') return 'Payment Verified by Agent';
+				if(o.paymentState==='released') return 'Payment Released';
+				if(o.status==='picked') return 'Picked Up';
+				if(o.status==='delivered') return 'Delivered';
+				return 'Pending';
+			}
+
+			function stepClass(o, step){
+				// highlight steps up to current state
+				if(step==='pending'){
+					return (o.status==='picked' || o.paymentState!=='held' || o.status==='delivered') ? 'picked' : 'pending';
+				}
+				if(step==='agent') return (o.paymentState==='agent_verified' || o.paymentState==='released' || o.status==='delivered') ? 'agent' : '';
+				if(step==='released') return (o.paymentState==='released' || o.status==='delivered') ? 'released' : '';
+				if(step==='delivered') return (o.status==='delivered') ? 'delivered' : '';
+				return '';
+			}
+
+			function updateAgentButtonsState(){
+				ordersArea.querySelectorAll('.order-card').forEach(card=>{
+					const id = card.querySelector('div.muted + div.muted') ? card.querySelectorAll('div.muted')[1].textContent : null;
+					// simpler: read from data attributes on buttons
+				});
+				// enable/disable according to sequence
+				ordersArea.querySelectorAll('button[data-action]').forEach(btn=>{
+					const id = btn.dataset.id; const action = btn.dataset.action; const o = orders.find(x=>x.id===id);
+					if(!o) return;
+					if(action==='pickup') btn.disabled = (o.status!=='pending');
+					if(action==='agent-verify') btn.disabled = !(o.status==='picked' && o.paymentState==='held');
+					if(action==='deliver') btn.disabled = !(o.paymentState==='released');
+					btn.classList.toggle('btn-disabled', btn.disabled);
+				});
+			}
+
+			function handleAgentAction(id, action){
+				const o = orders.find(x=>x.id===id); if(!o) return;
+				if(action==='pickup'){
+					if(o.status!=='pending') return; o.status='picked'; showNotify(`${o.id}: Picked up from farmer`); renderAgentOrders(); renderAdmin();
+				}
+				if(action==='agent-verify'){
+					if(!(o.status==='picked' && o.paymentState==='held')) return; o.paymentState='agent_verified'; showNotify(`${o.id}: Agent verified payment — notifying Admin`); renderAgentOrders(); renderAdmin();
+				}
+				if(action==='deliver'){
+					if(o.paymentState!=='released') return; o.status='delivered'; o.completedAt = new Date().toLocaleString(); showNotify(`${o.id}: Delivered to buyer — completed`); // archive completed
+					// optionally move to history
+					const idx = orders.findIndex(x=>x.id===id); if(idx>-1){ const done = orders.splice(idx,1)[0]; paymentHistory.unshift({id:done.id,crop:done.crop,qty:done.qty,when:done.completedAt,price:done.price,status:'Delivered & Paid'}); }
+					renderAgentOrders(); renderAdmin(); renderHistory();
+				}
+				updateAgentButtonsState();
+			}
+
+			// Admin rendering and handlers
+			function renderAdmin(){
+				adminPending.innerHTML='';
+				// show orders where paymentState is agent_verified
+				orders.filter(o=>o.paymentState==='agent_verified').forEach(o=>{
+					const el = document.createElement('div'); el.className='admin-card';
+					el.innerHTML = `
+						<div style="display:flex; justify-content:space-between"><div style="font-weight:800">${o.crop}</div><div class="muted">${o.id}</div></div>
+						<div class="muted">${o.qty} • Farmer: ${o.farmer.name}</div>
+						<div style="display:flex; gap:8px; margin-top:8px">
+							<button class="btn btn-primary" data-auth="${o.id}">Authorize Payment</button>
+							<div style="flex:1"></div>
+							<div class="muted">Payment held: $${o.price.replace(/[^0-9]/g,'')}</div>
+						</div>
+					`;
+					adminPending.appendChild(el);
+				});
+
+				// attach authorize handlers
+				adminPending.querySelectorAll('button[data-auth]').forEach(b=>{ b.addEventListener('click',(e)=>{ const id=e.currentTarget.dataset.auth; authorizePayment(id); }); });
+			}
+
+			function authorizePayment(id){
+				const o = orders.find(x=>x.id===id); if(!o) return;
+				if(o.paymentState!=='agent_verified') return; o.paymentState='released'; paymentHistory.unshift({id:o.id,crop:o.crop,qty:o.qty,when:new Date().toLocaleString(),price:o.price,status:'Payment Released to Farmer'});
+				showNotify(`${o.id}: Admin authorized payment → Released to Farmer`, true);
+				renderAdmin(); renderAgentOrders(); renderHistory();
+			}
+
+			function renderHistory(){
+				paymentHistoryEl.innerHTML='';
+				paymentHistory.forEach(h=>{
+					const e = document.createElement('div'); e.className='admin-card'; e.innerHTML = `<div style="display:flex; justify-content:space-between"><div style="font-weight:700">${h.crop}</div><div class="muted">${h.when}</div></div><div class="muted">${h.qty} • ${h.price} • ${h.status}</div>`; paymentHistoryEl.appendChild(e);
+				});
+			}
+
+			// Notifications
+			let notifyTimer = null;
+			function showNotify(text, persistent=false){ notify.style.display='block'; notify.textContent = text; if(notifyTimer) clearTimeout(notifyTimer); if(!persistent) notifyTimer = setTimeout(hideNotify, 3500); }
+			function hideNotify(){ notify.style.display='none'; notify.textContent=''; if(notifyTimer){ clearTimeout(notifyTimer); notifyTimer=null;} }
+
+			// start demo
+			init();
+		</script>
+	</body>
+</html>
