@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AGRILINK - Admin Dashboard</title>
+    <link rel="stylesheet" href="styles/admin.css">
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <h1 class="logo">🧑‍💼 AGRILINK Admin</h1>
+            <nav class="nav">
+                <a href="index.html" class="nav-link">Home</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="main">
+        <div class="container">
+            <!-- Summary Cards -->
+            <div class="summary-cards">
+                <div class="summary-card">
+                    <div class="summary-icon">👨‍🌾</div>
+                    <div class="summary-content">
+                        <div class="summary-value" id="totalFarmers">0</div>
+                        <div class="summary-label">Total Farmers</div>
+                    </div>
+                </div>
+                <div class="summary-card">
+                    <div class="summary-icon">📦</div>
+                    <div class="summary-content">
+                        <div class="summary-value" id="activeListings">0</div>
+                        <div class="summary-label">Active Listings</div>
+                    </div>
+                </div>
+                <div class="summary-card">
+                    <div class="summary-icon">🚚</div>
+                    <div class="summary-content">
+                        <div class="summary-value" id="pendingDeliveries">0</div>
+                        <div class="summary-label">Pending Deliveries</div>
+                    </div>
+                </div>
+                <div class="summary-card">
+                    <div class="summary-icon">💰</div>
+                    <div class="summary-content">
+                        <div class="summary-value" id="paymentsAutoReleased">0</div>
+                        <div class="summary-label">Payments Auto-Released</div>
+                    </div>
+                </div>
+                <div class="summary-card exception-card">
+                    <div class="summary-icon">⚠️</div>
+                    <div class="summary-content">
+                        <div class="summary-value" id="exceptionsCount">0</div>
+                        <div class="summary-label">Exceptions</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tabs -->
+            <div class="tabs">
+                <button class="tab-btn active" onclick="showTab('deliveries')">Deliveries</button>
+                <button class="tab-btn" onclick="showTab('payments')">Payments</button>
+                <button class="tab-btn" onclick="showTab('refunds')">Refunds</button>
+                <button class="tab-btn" onclick="showTab('farmers')">Farmers</button>
+                <button class="tab-btn" onclick="showTab('orders')">Orders</button>
+                <button class="tab-btn" onclick="showTab('audit')">Audit Log</button>
+            </div>
+
+            <!-- Deliveries Tab -->
+            <div id="deliveriesTab" class="tab-content active">
+                <div class="tab-header">
+                    <h2>Deliveries Management</h2>
+                    <div class="filter-controls">
+                        <label class="filter-toggle">
+                            <input type="checkbox" id="showExceptionsOnly" onchange="toggleExceptionFilter()">
+                            <span>Show Exceptions Only</span>
+                        </label>
+                    </div>
+                </div>
+                
+                <!-- Exception Alert -->
+                <div id="exceptionAlert" class="exception-alert" style="display: none;">
+                    <span class="alert-icon">⚠️</span>
+                    <span class="alert-text">There are deliveries requiring attention. Review exceptions below.</span>
+                </div>
+                
+                <div class="table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Delivery ID</th>
+                                <th>Order ID</th>
+                                <th>Product</th>
+                                <th>Quantity</th>
+                                <th>Farmer</th>
+                                <th>Buyer</th>
+                                <th>Codes Verified</th>
+                                <th>Delivery Status</th>
+                                <th>Payment Released</th>
+                                <th>Date Delivered</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="deliveriesTableBody"></tbody>
+                    </table>
+                </div>
+                
+                <!-- Exception Handling Section -->
+                <div id="exceptionSection" class="exception-section" style="display: none;">
+                    <h3>⚠️ Exception Handling</h3>
+                    <div class="table-container">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Delivery ID</th>
+                                    <th>Issue</th>
+                                    <th>Product</th>
+                                    <th>Farmer</th>
+                                    <th>Buyer</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="exceptionsTableBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Payments Tab -->
+            <div id="paymentsTab" class="tab-content">
+                <h2>Payments Management</h2>
+                <p class="info-text">💡 Payments are automatically released when delivery codes are verified. Manual intervention only required for exceptions.</p>
+                <div class="table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Payment ID</th>
+                                <th>Order ID</th>
+                                <th>Farmer</th>
+                                <th>Amount</th>
+                                <th>Status</th>
+                                <th>Date Created</th>
+                                <th>Date Released</th>
+                                <th>Release Method</th>
+                            </tr>
+                        </thead>
+                        <tbody id="paymentsTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Refunds Tab -->
+            <div id="refundsTab" class="tab-content">
+                <h2>Refund Requests</h2>
+                <p class="info-text">💡 Review and approve/reject refund requests. Verify delivery status and buyer passcode before processing.</p>
+                <div class="table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Order ID</th>
+                                <th>Buyer Name / ID</th>
+                                <th>Product Name</th>
+                                <th>Reason</th>
+                                <th>Delivery Status</th>
+                                <th>Buyer Passcode</th>
+                                <th>Refund Status</th>
+                                <th>Date Requested</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="refundsTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Farmers Tab -->
+            <div id="farmersTab" class="tab-content">
+                <h2>Farmers Management</h2>
+                <div class="table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Farmer ID</th>
+                                <th>Name</th>
+                                <th>Location</th>
+                                <th>Phone</th>
+                                <th>Total Sold</th>
+                                <th>Total Earned</th>
+                                <th>Balance</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="farmersTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Orders Tab -->
+            <div id="ordersTab" class="tab-content">
+                <h2>Orders Management</h2>
+                <div class="table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Order ID</th>
+                                <th>Buyer</th>
+                                <th>Crop</th>
+                                <th>Quantity</th>
+                                <th>Total Price</th>
+                                <th>Farmer</th>
+                                <th>Status</th>
+                                <th>Date Ordered</th>
+                            </tr>
+                        </thead>
+                        <tbody id="ordersTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Audit Log Tab -->
+            <div id="auditTab" class="tab-content">
+                <h2>Audit Log</h2>
+                <div class="table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Timestamp</th>
+                                <th>Action</th>
+                                <th>User ID</th>
+                                <th>Details</th>
+                            </tr>
+                        </thead>
+                        <tbody id="auditTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Success Notification -->
+    <div id="successToast" class="toast"></div>
+
+    <script src="shared/data.js"></script>
+    <script src="scripts/admin.js"></script>
+</body>
+</html>
+

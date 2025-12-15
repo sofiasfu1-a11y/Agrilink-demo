@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="am">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AGRILINK - አርሶ አደር</title>
+    <link rel="stylesheet" href="styles/farmer.css">
+</head>
+<body>
+    <!-- Login Screen -->
+    <div id="loginScreen" class="screen active">
+        <div class="container">
+            <h1 class="app-title">AGRILINK</h1>
+            <div class="login-box">
+                <label class="label-large">የይለፍ ቃል</label>
+                <input type="text" id="passcodeInput" class="input-large" maxlength="4" pattern="[0-9]*" inputmode="numeric" placeholder="0000">
+                <button id="loginBtn" class="btn-glow btn-large">ግባ</button>
+                <div id="loginError" class="error-toast"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Menu -->
+    <div id="mainMenu" class="screen">
+        <div class="container">
+            <h1 class="app-title">AGRILINK</h1>
+            <div class="menu-grid">
+                <button class="menu-btn btn-glow" onclick="showScreen('sellScreen')">
+                    <span class="btn-icon">💰</span>
+                    <span class="btn-text">መሸጥ</span>
+                </button>
+                <button class="menu-btn btn-glow" onclick="showScreen('newsScreen')">
+                    <span class="btn-icon">📰</span>
+                    <span class="btn-text">ገበያ ዜና</span>
+                </button>
+                <button class="menu-btn btn-glow" onclick="showScreen('balanceScreen')">
+                    <span class="btn-icon">💵</span>
+                    <span class="btn-text">ቀሪ ሂሳብ</span>
+                </button>
+            </div>
+            <button class="btn-back" onclick="logout()">ውጣ</button>
+        </div>
+    </div>
+
+    <!-- Sell Product Screen -->
+    <div id="sellScreen" class="screen">
+        <div class="container">
+            <h2 class="screen-title">መሸጥ</h2>
+            <div class="crop-grid">
+                <div class="crop-card" data-crop="ጤፍ" data-crop-en="Teff">
+                    <div class="crop-name">ጤፍ</div>
+                    <div class="crop-price">አማካይ: 50 ብር/ኪ.ግ</div>
+                </div>
+                <div class="crop-card" data-crop="ቲማቲም" data-crop-en="Tomato">
+                    <div class="crop-name">ቲማቲም</div>
+                    <div class="crop-price">አማካይ: 30 ብር/ኪ.ግ</div>
+                </div>
+                <div class="crop-card" data-crop="ሽንኩርት" data-crop-en="Onion">
+                    <div class="crop-name">ሽንኩርት</div>
+                    <div class="crop-price">አማካይ: 40 ብር/ኪ.ግ</div>
+                </div>
+                <div class="crop-card" data-crop="ድንች" data-crop-en="Potato">
+                    <div class="crop-name">ድንች</div>
+                    <div class="crop-price">አማካይ: 25 ብር/ኪ.ግ</div>
+                </div>
+                <div class="crop-card" data-crop="ሙዝ" data-crop-en="Banana">
+                    <div class="crop-name">ሙዝ</div>
+                    <div class="crop-price">አማካይ: 35 ብር/ኪ.ግ</div>
+                </div>
+                <div class="crop-card" data-crop="አቫካዶ" data-crop-en="Avocado">
+                    <div class="crop-name">አቫካዶ</div>
+                    <div class="crop-price">አማካይ: 60 ብር/ኪ.ግ</div>
+                </div>
+            </div>
+            <div id="sellForm" class="sell-form" style="display: none;">
+                <div class="selected-crop-display">
+                    <span id="selectedCropName"></span>
+                </div>
+                <label class="label-large">መጠን (ኪ.ግ)</label>
+                <input type="number" id="quantityInput" class="input-large" min="1" placeholder="0">
+                <label class="label-large">ዋጋ (ብር/ኪ.ግ)</label>
+                <input type="number" id="priceInput" class="input-large" min="1" placeholder="0">
+                <button id="confirmSellBtn" class="btn-glow btn-large">አረጋግጥ</button>
+            </div>
+            <button class="btn-back" onclick="showScreen('mainMenu')">ተመለስ</button>
+        </div>
+    </div>
+
+    <!-- Balance Screen -->
+    <div id="balanceScreen" class="screen">
+        <div class="container">
+            <h2 class="screen-title">ቀሪ ሂሳብ</h2>
+            <div class="balance-cards">
+                <div class="balance-card">
+                    <div class="balance-label">ጠቅላላ የተሸጠ</div>
+                    <div class="balance-value" id="totalSold">0 ኪ.ግ</div>
+                </div>
+                <div class="balance-card">
+                    <div class="balance-label">ጠቅላላ የተገኘ</div>
+                    <div class="balance-value" id="totalEarned">0 ብር</div>
+                </div>
+            </div>
+            <button class="btn-back" onclick="showScreen('mainMenu')">ተመለስ</button>
+        </div>
+    </div>
+
+    <!-- Market News Screen -->
+    <div id="newsScreen" class="screen">
+        <div class="container">
+            <h2 class="screen-title">ገበያ ዜና</h2>
+            <div class="news-content">
+                <section class="news-section">
+                    <h3 class="section-title">በጣም ታዋቂ ምርት</h3>
+                    <div id="popularProducts" class="popular-list"></div>
+                </section>
+                <section class="news-section">
+                    <h3 class="section-title">የገበያ ዋጋዎች</h3>
+                    <div id="marketPrices" class="prices-list"></div>
+                </section>
+            </div>
+            <button class="btn-back" onclick="showScreen('mainMenu')">ተመለስ</button>
+        </div>
+    </div>
+
+    <!-- Success Notification -->
+    <div id="successToast" class="toast"></div>
+
+    <!-- Product Info Modal -->
+    <div id="productInfoModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeProductInfoModal()">&times;</span>
+            <h2 class="modal-title">የምርት መረጃ</h2>
+            <div class="product-info-card">
+                <div class="info-item">
+                    <span class="info-label">የምርት መለያ:</span>
+                    <span class="info-value" id="productIdDisplay"></span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">የአሽከርካሪ ስም:</span>
+                    <span class="info-value" id="driverNameDisplay"></span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">ፈቃድ ቁጥር:</span>
+                    <span class="info-value" id="driverLicenseDisplay"></span>
+                </div>
+            </div>
+            <button class="btn-close-info" onclick="closeProductInfoModal()">ዝጋ</button>
+        </div>
+    </div>
+
+    <script src="shared/data.js"></script>
+    <script src="scripts/farmer.js"></script>
+</body>
+</html>
+

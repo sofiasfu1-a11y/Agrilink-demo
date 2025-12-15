@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AGRILINK - Buyer</title>
+    <link rel="stylesheet" href="styles/buyer.css">
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <h1 class="logo">🌾 AGRILINK - Buyer Panel</h1>
+            <nav class="nav">
+                <a href="index.html" class="nav-link">Home</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="main">
+        <div class="container">
+            <!-- Filters -->
+            <div class="filters">
+                <input type="text" id="searchInput" class="search-input" placeholder="Search products...">
+                <select id="cropFilter" class="filter-select">
+                    <option value="">All Products</option>
+                    <option value="Teff">Teff</option>
+                    <option value="Tomato">Tomato</option>
+                    <option value="Onion">Onion</option>
+                    <option value="Potato">Potato</option>
+                    <option value="Banana">Banana</option>
+                    <option value="Avocado">Avocado</option>
+                </select>
+                <select id="priceFilter" class="filter-select">
+                    <option value="">All Prices</option>
+                    <option value="low">Low to High</option>
+                    <option value="high">High to Low</option>
+                </select>
+            </div>
+
+            <!-- Products Grid -->
+            <div id="productsGrid" class="products-grid"></div>
+
+            <!-- Empty State -->
+            <div id="emptyState" class="empty-state" style="display: none;">
+                <p>No products available at the moment.</p>
+            </div>
+
+            <!-- My Orders Section -->
+            <div class="orders-section" id="ordersSection" style="display: none;">
+                <h2>My Orders</h2>
+                <div id="ordersList" class="orders-list"></div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Product Detail Modal -->
+    <div id="productModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <div id="productDetail" class="product-detail"></div>
+        </div>
+    </div>
+
+    <!-- Checkout Modal -->
+    <div id="checkoutModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <div id="checkoutForm" class="checkout-form"></div>
+        </div>
+    </div>
+
+    <!-- Delivery Agent Info Modal -->
+    <div id="deliveryAgentModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <div id="deliveryAgentInfo" class="delivery-agent-info"></div>
+        </div>
+    </div>
+
+    <!-- Rating Modal -->
+    <div id="ratingModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <div id="ratingForm" class="rating-form"></div>
+        </div>
+    </div>
+
+    <!-- Passcode Verification Modal -->
+    <div id="passcodeModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closePasscodeModal()">&times;</span>
+            <div class="passcode-verification">
+                <h2>🔐 Verify Account Passcode</h2>
+                <p class="passcode-hint">Enter your account passcode to confirm payment</p>
+                <div class="order-summary-preview" id="orderSummaryPreview"></div>
+                <div class="passcode-input-wrapper">
+                    <input type="password" id="passcodeInput" class="passcode-input" placeholder="Enter 4-6 digit passcode" maxlength="6" pattern="[0-9]{4,6}" autocomplete="off">
+                    <button type="button" class="password-toggle" onclick="togglePasscodeVisibility()">👁️</button>
+                </div>
+                <div id="passcodeError" class="error-message" style="display: none;"></div>
+                <div class="passcode-actions">
+                    <button type="button" class="btn-cancel" onclick="closePasscodeModal()">Cancel</button>
+                    <button type="button" class="btn-confirm" onclick="verifyPasscodeAndPurchase()">Confirm Purchase</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Refund Request Modal -->
+    <div id="refundModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeRefundModal()">&times;</span>
+            <div class="refund-request-form">
+                <h2>💰 Request Refund</h2>
+                <p class="refund-hint">Please provide the following information to request a refund</p>
+                
+                <div class="refund-form-group">
+                    <label>Order ID</label>
+                    <input type="text" id="refundOrderId" class="form-input" readonly>
+                </div>
+                
+                <div class="refund-form-group">
+                    <label>Reason for Refund <span class="optional">(Optional)</span></label>
+                    <textarea id="refundReason" class="form-textarea" placeholder="Please provide a reason for the refund request..." rows="4"></textarea>
+                </div>
+                
+                <div class="refund-form-group">
+                    <label>Account Passcode <span class="required">*</span></label>
+                    <div class="passcode-input-wrapper">
+                        <input type="password" id="refundPasscode" class="passcode-input" placeholder="Enter your 4-6 digit passcode" maxlength="6" pattern="[0-9]{4,6}" autocomplete="off">
+                        <button type="button" class="password-toggle" onclick="toggleRefundPasscodeVisibility()">👁️</button>
+                    </div>
+                    <small class="input-hint">Enter the same passcode you used to place this order</small>
+                </div>
+                
+                <div id="refundError" class="error-message" style="display: none;"></div>
+                
+                <div class="refund-actions">
+                    <button type="button" class="btn-cancel" onclick="closeRefundModal()">Cancel</button>
+                    <button type="button" class="btn-confirm" onclick="submitRefundRequest()">Submit Refund Request</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Success Notification -->
+    <div id="successToast" class="toast"></div>
+
+    <script src="shared/data.js"></script>
+    <script>
+        // Check if buyer is logged in
+        const buyerId = localStorage.getItem('agrilinkBuyerId') || sessionStorage.getItem('agrilinkBuyerId');
+        if (!buyerId) {
+            // Redirect to signup page if not logged in
+            window.location.href = 'signup.html';
+        }
+    </script>
+    <script src="scripts/buyer.js"></script>
+</body>
+</html>
+

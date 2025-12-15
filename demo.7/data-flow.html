@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AGRILINK - Data Flow Diagram</title>
+    <link rel="stylesheet" href="styles/data-flow.css">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>🌾 AGRILINK - Data Flow Visualization</h1>
+            <p class="subtitle">Animated marketplace data flow between actors</p>
+        </header>
+
+        <div class="diagram-container">
+            <!-- Background particles -->
+            <div class="particles">
+                <div class="particle"></div>
+                <div class="particle"></div>
+                <div class="particle"></div>
+                <div class="particle"></div>
+                <div class="particle"></div>
+            </div>
+
+            <!-- Actors -->
+            <div class="actor farmer" id="farmer" data-actor="Farmer">
+                <div class="actor-icon">🌾</div>
+                <div class="actor-label">Farmer</div>
+                <div class="actor-pulse"></div>
+            </div>
+
+            <div class="actor buyer" id="buyer" data-actor="Buyer">
+                <div class="actor-icon">🛒</div>
+                <div class="actor-label">Buyer</div>
+                <div class="actor-pulse"></div>
+            </div>
+
+            <div class="actor delivery" id="delivery" data-actor="Delivery Agent">
+                <div class="actor-icon">🚚</div>
+                <div class="actor-label">Delivery Agent</div>
+                <div class="actor-pulse"></div>
+            </div>
+
+            <div class="actor admin" id="admin" data-actor="Admin">
+                <div class="actor-icon">👨‍💼</div>
+                <div class="actor-label">Admin</div>
+                <div class="actor-pulse"></div>
+            </div>
+
+            <!-- Data Flow Arrows -->
+            <!-- Farmer → Buyer -->
+            <svg class="arrow-svg" id="arrow-farmer-buyer">
+                <defs>
+                    <linearGradient id="gradient-fb" x1="0%" y1="0%" x2="100%" y2="0%">
+                        <stop offset="0%" style="stop-color:#4CAF50;stop-opacity:1" />
+                        <stop offset="100%" style="stop-color:#2196F3;stop-opacity:1" />
+                    </linearGradient>
+                    <filter id="glow-fb">
+                        <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+                        <feMerge>
+                            <feMergeNode in="coloredBlur"/>
+                            <feMergeNode in="SourceGraphic"/>
+                        </feMerge>
+                    </filter>
+                </defs>
+                <path class="arrow-path" d="M 100 100 Q 400 50 700 100" stroke="url(#gradient-fb)" stroke-width="3" fill="none" filter="url(#glow-fb)"/>
+                <polygon class="arrowhead" points="695,95 710,100 695,105" fill="#2196F3"/>
+            </svg>
+            <div class="flow-label" id="label-farmer-buyer">Product Info</div>
+            <div class="data-packet" id="packet-farmer-buyer">📦</div>
+
+            <!-- Buyer → Delivery Agent -->
+            <svg class="arrow-svg" id="arrow-buyer-delivery">
+                <defs>
+                    <linearGradient id="gradient-bd" x1="0%" y1="0%" x2="0%" y2="100%">
+                        <stop offset="0%" style="stop-color:#2196F3;stop-opacity:1" />
+                        <stop offset="100%" style="stop-color:#FF9800;stop-opacity:1" />
+                    </linearGradient>
+                    <filter id="glow-bd">
+                        <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+                        <feMerge>
+                            <feMergeNode in="coloredBlur"/>
+                            <feMergeNode in="SourceGraphic"/>
+                        </feMerge>
+                    </filter>
+                </defs>
+                <path class="arrow-path" d="M 700 150 Q 750 300 700 450" stroke="url(#gradient-bd)" stroke-width="3" fill="none" filter="url(#glow-bd)"/>
+                <polygon class="arrowhead" points="695,445 700,460 705,445" fill="#FF9800"/>
+            </svg>
+            <div class="flow-label" id="label-buyer-delivery">Order + Codes</div>
+            <div class="data-packet" id="packet-buyer-delivery">📋</div>
+
+            <!-- Delivery Agent → Admin -->
+            <svg class="arrow-svg" id="arrow-delivery-admin">
+                <defs>
+                    <linearGradient id="gradient-da" x1="100%" y1="0%" x2="0%" y2="0%">
+                        <stop offset="0%" style="stop-color:#FF9800;stop-opacity:1" />
+                        <stop offset="100%" style="stop-color:#9C27B0;stop-opacity:1" />
+                    </linearGradient>
+                    <filter id="glow-da">
+                        <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+                        <feMerge>
+                            <feMergeNode in="coloredBlur"/>
+                            <feMergeNode in="SourceGraphic"/>
+                        </feMerge>
+                    </filter>
+                </defs>
+                <path class="arrow-path" d="M 700 500 Q 400 550 100 500" stroke="url(#gradient-da)" stroke-width="3" fill="none" filter="url(#glow-da)"/>
+                <polygon class="arrowhead" points="105,495 90,500 105,505" fill="#9C27B0"/>
+            </svg>
+            <div class="flow-label" id="label-delivery-admin">Delivery Status</div>
+            <div class="data-packet" id="packet-delivery-admin">✅</div>
+
+            <!-- Admin → Farmer -->
+            <svg class="arrow-svg" id="arrow-admin-farmer">
+                <defs>
+                    <linearGradient id="gradient-af" x1="0%" y1="100%" x2="0%" y2="0%">
+                        <stop offset="0%" style="stop-color:#9C27B0;stop-opacity:1" />
+                        <stop offset="100%" style="stop-color:#4CAF50;stop-opacity:1" />
+                    </linearGradient>
+                    <filter id="glow-af">
+                        <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+                        <feMerge>
+                            <feMergeNode in="coloredBlur"/>
+                            <feMergeNode in="SourceGraphic"/>
+                        </feMerge>
+                    </filter>
+                </defs>
+                <path class="arrow-path" d="M 100 500 Q 50 300 100 100" stroke="url(#gradient-af)" stroke-width="3" fill="none" filter="url(#glow-af)"/>
+                <polygon class="arrowhead" points="105,105 100,90 95,105" fill="#4CAF50"/>
+            </svg>
+            <div class="flow-label" id="label-admin-farmer">Payment Release</div>
+            <div class="data-packet" id="packet-admin-farmer">💰</div>
+        </div>
+
+        <!-- Tooltip -->
+        <div class="tooltip" id="tooltip"></div>
+
+        <!-- Legend -->
+        <div class="legend">
+            <h3>Data Flow Sequence</h3>
+            <div class="legend-item">
+                <span class="legend-color" style="background: linear-gradient(90deg, #4CAF50, #2196F3);"></span>
+                <span>1. Product Info (Crop, Quantity, Price, Farmer ID)</span>
+            </div>
+            <div class="legend-item">
+                <span class="legend-color" style="background: linear-gradient(180deg, #2196F3, #FF9800);"></span>
+                <span>2. Order + Verification Codes (Buyer Code, Farmer Code)</span>
+            </div>
+            <div class="legend-item">
+                <span class="legend-color" style="background: linear-gradient(90deg, #FF9800, #9C27B0);"></span>
+                <span>3. Delivery Confirmation + Code Verification</span>
+            </div>
+            <div class="legend-item">
+                <span class="legend-color" style="background: linear-gradient(180deg, #9C27B0, #4CAF50);"></span>
+                <span>4. Payment Release + Feedback</span>
+            </div>
+        </div>
+    </div>
+
+    <script src="scripts/data-flow.js"></script>
+</body>
+</html>
+

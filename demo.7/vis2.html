@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AGRILINK Data Flow Demo (Circles)</title>
+    <style>
+        /*
+         * ----------------------------------------
+         * 1. General Styling and Layout
+         * ----------------------------------------
+         */
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            background-color: #f4f7f6;
+        }
+
+        h1 {
+            color: #1a5319;
+            margin-bottom: 40px;
+        }
+
+        /* The main container for the 2x2 grid */
+        .grid-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            grid-template-rows: 1fr 1fr;
+            gap: 180px; /* Increased space for the arrows */
+            padding: 50px;
+            position: relative; 
+            width: 700px; /* Slightly smaller width for the demo */
+            max-width: 90%;
+            background-color: #fff;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        /*
+         * ----------------------------------------
+         * 2. Actor Styling (The 4 Circles)
+         * ----------------------------------------
+         */
+        .actor {
+            /* Shape and Size */
+            width: 100px;
+            height: 100px;
+            border-radius: 50%; /* Make it a circle */
+            
+            /* Content Layout */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            margin: auto; /* Center the circle within the grid cell */
+            
+            /* Text and Color */
+            color: white;
+            font-weight: bold;
+            text-align: center;
+            cursor: pointer;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .actor:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Specific Actor Colors */
+        .actor#farmer { background-color: #4CAF50; } 
+        .actor#buyer { background-color: #2196F3; } 
+        .actor#delivery { background-color: #FF9800; } 
+        .actor#admin { background-color: #9C27B0; }
+
+        .actor-icon {
+            font-size: 28px;
+            margin-bottom: 2px;
+        }
+
+        /* Tooltip for Actor Hover */
+        .actor:hover::after {
+            content: attr(data-info);
+            position: absolute;
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 8px 12px;
+            border-radius: 4px;
+            font-size: 14px;
+            z-index: 10;
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            white-space: nowrap;
+        }
+
+        /*
+         * ----------------------------------------
+         * 3. Arrow Line Styling (SVG)
+         * ----------------------------------------
+         */
+        .svg-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none; 
+        }
+
+        .data-flow-line {
+            stroke: #333;
+            stroke-width: 3;
+            marker-end: url(#arrowhead);
+            pointer-events: all; 
+            transition: stroke 0.3s, stroke-width 0.3s;
+        }
+
+        /* Tooltip for Arrow Hover */
+        .data-flow-line:hover {
+            stroke-width: 5;
+            stroke: #ff5722; 
+        }
+
+        /*
+         * ----------------------------------------
+         * 4. Moving Icon Styling and Keyframes
+         * ----------------------------------------
+         */
+        .moving-icon {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 20px;
+            font-size: 14px;
+            color: white;
+            font-weight: bold;
+            pointer-events: all;
+            z-index: 5; /* Ensure icons are above the lines */
+        }
+
+        /* Custom Icon Styling */
+        .moving-icon#f_to_b { background-color: #4CAF50; border-radius: 4px; } 
+        .moving-icon#b_to_d { background-color: #2196F3; border-radius: 50%; } 
+        .moving-icon#f_to_d_prod { background-color: #FF9800; border-radius: 4px; border: 2px solid #fff; } 
+        .moving-icon#d_to_a { background-color: #9C27B0; border-radius: 50%; } 
+        .moving-icon#a_to_f { background-color: #FFEB3B; color: #333; border-radius: 50%; } 
+
+        /* Tooltip for Moving Icon/Arrow Hover */
+        .moving-icon:hover::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            background: #ff5722;
+            color: white;
+            padding: 6px 10px;
+            border-radius: 4px;
+            font-size: 12px;
+            z-index: 100;
+            top: -30px;
+            left: 50%;
+            transform: translateX(-50%);
+            white-space: nowrap;
+        }
+
+        /* Glow effect for Farmer -> Delivery (Physical Product) */
+        .glow-effect {
+            filter: drop-shadow(0 0 5px #ff9800);
+        }
+
+    </style>
+</head>
+<body>
+
+    <h1>AGRILINK Data Flow Demonstration</h1>
+
+    <div class="grid-container">
+
+        <div class="actor" id="farmer" data-info="Farmer: Uploads products & receives payment.">
+            <span class="actor-icon">🚜</span>
+            Farmer
+        </div>
+        <div class="actor" id="buyer" data-info="Buyer: Places orders & makes payments.">
+            <span class="actor-icon">🛒</span>
+            Buyer
+        </div>
+        <div class="actor" id="delivery" data-info="Delivery Agent: Handles logistics & verification.">
+            <span class="actor-icon">🏍️</span>
+            Delivery Agent
+        </div>
+        <div class="actor" id="admin" data-info="Admin: System oversight, verification, and payment release.">
+            <span class="actor-icon">🏛️</span>
+            Admin
+        </div>
+
+        <svg class="svg-container">
+            <defs>
+                <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="0" refY="3.5" orient="auto">
+                    <polygon points="0 0, 10 3.5, 0 7" fill="#333" />
+                </marker>
+            </defs>
+            </svg>
+
+        <div class="moving-icon" id="f_to_b" data-tooltip="Product info + Farmer ID">P</div>
+        <div class="moving-icon" id="b_to_d" data-tooltip="Order info + Verification Codes">@</div>
+        <div class="moving-icon glow-effect" id="f_to_d_prod" data-tooltip="Product + Farmer Code">📦</div>
+        <div class="moving-icon" id="d_to_a" data-tooltip="Delivery confirmed + Codes sent to Admin">✔️</div>
+        <div class="moving-icon" id="a_to_f" data-tooltip="Funds released to Farmer">$</div>
+
+    </div>
+
+    <script>
+        window.onload = function() {
+            // ----------------------------------------
+            // 1. Utility Functions
+            // ----------------------------------------
+
+            /**
+             * Gets the center coordinates of an HTML element relative to its offset parent.
+             * @param {HTMLElement} element - The element to find the center of.
+             * @returns {{x: number, y: number}} The center coordinates.
+             */
+            function getCenter(element) {
+                const rect = element.getBoundingClientRect();
+                const containerRect = document.querySelector('.grid-container').getBoundingClientRect();
+                return {
+                    x: rect.left + rect.width / 2 - containerRect.left,
+                    y: rect.top + rect.height / 2 - containerRect.top
+                };
+            }
+
+            /**
+             * Creates and appends an SVG line element to the SVG container.
+             */
+            function drawLine(id, x1, y1, x2, y2) {
+                const svg = document.querySelector('.svg-container');
+                const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+                line.setAttribute('id', 'line-' + id);
+                line.setAttribute('x1', x1);
+                line.setAttribute('y1', y1);
+                line.setAttribute('x2', x2);
+                line.setAttribute('y2', y2);
+                line.setAttribute('class', 'data-flow-line');
+                svg.appendChild(line);
+            }
+
+            // ----------------------------------------
+            // 2. Setup: Draw Arrows and Define Paths
+            // ----------------------------------------
+            
+            const farmer = document.getElementById('farmer');
+            const buyer = document.getElementById('buyer');
+            const delivery = document.getElementById('delivery');
+            const admin = document.getElementById('admin');
+
+            // Get center points
+            const p = {
+                f: getCenter(farmer),
+                b: getCenter(buyer),
+                d: getCenter(delivery),
+                a: getCenter(admin)
+            };
+
+            // Define the data flows
+            const flows = [
+                { id: 'f_to_b', start: p.f, end: p.b, icon: document.getElementById('f_to_b') },
+                { id: 'b_to_d', start: p.b, end: p.d, icon: document.getElementById('b_to_d') },
+                { id: 'f_to_d_prod', start: p.f, end: p.d, icon: document.getElementById('f_to_d_prod') },
+                { id: 'd_to_a', start: p.d, end: p.a, icon: document.getElementById('d_to_a') },
+                { id: 'a_to_f', start: p.a, end: p.f, icon: document.getElementById('a_to_f') }
+            ];
+
+            // A. Draw all lines
+            flows.forEach(flow => {
+                drawLine(flow.id, flow.start.x, flow.start.y, flow.end.x, flow.end.y);
+            });
+
+
+            // ----------------------------------------
+            // 3. Animation Logic (Slower Speed)
+            // ----------------------------------------
+
+            /**
+             * Calculates the Keyframes and applies the CSS animation to the moving icon.
+             */
+            function setupAnimation(flow) {
+                const icon = flow.icon;
+                const distance = Math.sqrt(Math.pow(flow.end.x - flow.start.x, 2) + Math.pow(flow.end.y - flow.start.y, 2));
+
+                // Speed factor to control the speed (LOWER number = SLOWER movement)
+                // Set to 150 for a clearer, slower visualization.
+                const speedFactor = 150; // pixels per second 
+                const calculatedDuration = distance / speedFactor;
+
+                // Create a unique keyframe name
+                const keyframeName = `move-${flow.id}`;
+                
+                // CSS keyframe definition: Straight line movement from start to end
+                // Note: -10px adjustment centers the 20x20px icon on the coordinate point.
+                const keyframes = `
+                    @keyframes ${keyframeName} {
+                        0% { transform: translate(${flow.start.x - 10}px, ${flow.start.y - 10}px); }
+                        50% { transform: translate(${flow.end.x - 10}px, ${flow.end.y - 10}px); }
+                        100% { transform: translate(${flow.start.x - 10}px, ${flow.start.y - 10}px); }
+                    }
+                `;
+                
+                // Inject the keyframes into the document's stylesheet
+                const styleSheet = document.styleSheets[0];
+                try {
+                    // Check if keyframes already exist before inserting (important for resize logic)
+                    const existingRule = Array.from(styleSheet.cssRules).find(rule => rule.name === keyframeName);
+                    if (!existingRule) {
+                        styleSheet.insertRule(keyframes, styleSheet.cssRules.length);
+                    }
+                } catch (e) {
+                    console.error("Could not insert keyframes rule:", e);
+                }
+
+                // Apply the animation to the icon element (duration is doubled because it goes 0%->50%->100%)
+                icon.style.animation = `${keyframeName} ${calculatedDuration * 2}s ease-in-out infinite alternate`;
+                
+                // Initial placement
+                icon.style.transform = `translate(${flow.start.x - 10}px, ${flow.start.y - 10}px)`;
+
+                // Sequential glow effect
+                icon.onanimationiteration = () => {
+                    const line = document.getElementById('line-' + flow.id);
+                    if (line) {
+                        line.style.stroke = '#ff5722'; // Orange-red highlight
+                        line.style.strokeWidth = '4';
+                        setTimeout(() => {
+                            line.style.stroke = '#333';
+                            line.style.strokeWidth = '3';
+                        }, 500); 
+                    }
+                };
+            }
+
+            // B. Set up animation for all flows
+            flows.forEach(setupAnimation);
+
+            // ----------------------------------------
+            // 4. Responsive Redraw on Resize
+            // ----------------------------------------
+            
+            let resizeTimer;
+            window.addEventListener('resize', () => {
+                clearTimeout(resizeTimer);
+                // Throttle the resize event for performance
+                resizeTimer = setTimeout(() => {
+                    // Remove existing lines and stop animations
+                    document.querySelectorAll('.data-flow-line').forEach(line => line.remove());
+                    flows.forEach(flow => flow.icon.style.animation = 'none'); 
+
+                    const newP = {
+                        f: getCenter(farmer),
+                        b: getCenter(buyer),
+                        d: getCenter(delivery),
+                        a: getCenter(admin)
+                    };
+
+                    flows.forEach(flow => {
+                        // Update start/end points
+                        flow.start = newP[flow.id.split('_')[0].charAt(0)];
+                        flow.end = newP[flow.id.includes('prod') ? 'd' : flow.id.split('_')[1].charAt(0)];
+                        
+                        // Redraw line
+                        drawLine(flow.id, flow.start.x, flow.start.y, flow.end.x, flow.end.y);
+                        
+                        // Restart animation
+                        setupAnimation(flow);
+                    });
+                }, 250);
+            });
+        };
+    </script>
+
+</body>
+</html>

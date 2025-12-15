@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AGRILINK - Agricultural Marketplace</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            padding: 60px 40px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 900px;
+            width: 100%;
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 3.5em;
+            color: #2d5016;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .subtitle {
+            font-size: 1.2em;
+            color: #666;
+            margin-bottom: 50px;
+        }
+
+        .role-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 30px;
+            margin-top: 40px;
+        }
+
+        .role-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 15px;
+            padding: 40px 20px;
+            color: white;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            cursor: pointer;
+        }
+
+        .role-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .role-card.farmer {
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+        }
+
+        .role-card.buyer {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        }
+
+        .role-card.delivery {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        }
+
+        .role-card.admin {
+            background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+        }
+
+        .role-icon {
+            font-size: 4em;
+            margin-bottom: 15px;
+        }
+
+        .role-title {
+            font-size: 1.5em;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .role-desc {
+            font-size: 0.9em;
+            opacity: 0.9;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🌾 AGRILINK</h1>
+        <p class="subtitle">Agricultural Marketplace Platform</p>
+        <p style="color: #888; margin-bottom: 30px;">Select your role to access the platform</p>
+        
+        <div class="role-grid">
+            <a href="farmer.html" class="role-card farmer">
+                <div class="role-icon">👨‍🌾</div>
+                <div class="role-title">Farmer</div>
+                <div class="role-desc">Sell Products & View Market</div>
+            </a>
+            
+            <a href="signup.html" class="role-card buyer">
+                <div class="role-icon">🛒</div>
+                <div class="role-title">Buyer</div>
+                <div class="role-desc">Create Account & Shop</div>
+            </a>
+            
+            <a href="delivery.html" class="role-card delivery">
+                <div class="role-icon">🚚</div>
+                <div class="role-title">Delivery Agent</div>
+                <div class="role-desc">Manage Deliveries</div>
+            </a>
+            
+            <a href="admin.html" class="role-card admin">
+                <div class="role-icon">🧑‍💼</div>
+                <div class="role-title">Admin</div>
+                <div class="role-desc">Central Dashboard & Control</div>
+            </a>
+        </div>
+    </div>
+
+    <script src="shared/data.js"></script>
+</body>
+</html>
+

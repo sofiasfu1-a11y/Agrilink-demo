@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Market Data Aggregation Demo (Large Screen)</title>
+    <style>
+        /*
+         * ----------------------------------------
+         * 1. General Styling and Scene Setup
+         * ----------------------------------------
+         */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            /* Use more viewport height/width */
+            min-height: 100vh;
+            margin: 0;
+            background: linear-gradient(135deg, #e0f2f1 0%, #b2dfdb 100%);
+            overflow: hidden; 
+        }
+
+        h1 {
+            color: #004d40;
+            margin-bottom: 30px;
+        }
+
+        /* Main container for the animation scene - INCREASED SIZE */
+        .scene-container {
+            position: relative;
+            width: 90vw; /* 90% of viewport width */
+            height: 80vh; /* 80% of viewport height */
+            max-width: 1200px; /* Cap for very large screens */
+            max-height: 800px;
+            background-color: #fff;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /*
+         * ----------------------------------------
+         * 2. Central 20 km Radius Circle - INCREASED SIZE
+         * ----------------------------------------
+         */
+        .radius-circle {
+            position: absolute;
+            width: 500px; /* Larger Circle */
+            height: 500px; /* Larger Circle */
+            border-radius: 50%;
+            border: 4px dashed #00796b;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #004d40;
+            font-size: 2em; /* Larger text */
+            font-weight: bold;
+            box-shadow: 0 0 15px rgba(0, 121, 107, 0.4);
+            z-index: 1; 
+            transition: transform 0.8s ease-out;
+        }
+
+        /*
+         * ----------------------------------------
+         * 3. Data Point Circles
+         * ----------------------------------------
+         */
+        .data-point {
+            position: absolute;
+            width: 15px;
+            height: 15px;
+            border-radius: 50%;
+            opacity: 0;
+            /* Note: The JS handles the curved path logic via coordinates */
+            transition: opacity 0.5s ease-in, transform 4s cubic-bezier(0.4, 0, 0.6, 1); /* Increased duration for longer travel */
+            z-index: 2; 
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+        }
+
+        /*
+         * ----------------------------------------
+         * 4. Aggregation Circle
+         * ----------------------------------------
+         */
+        .aggregate-circle {
+            position: absolute;
+            width: 60px; /* Slightly larger to match new scale */
+            height: 60px;
+            border-radius: 50%;
+            background-color: #ff9800; 
+            display: none; 
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1em;
+            font-weight: bold;
+            transform: scale(0); 
+            transition: transform 0.5s ease-out, opacity 0.5s ease-out;
+            z-index: 3; 
+            box-shadow: 0 0 10px #ff9800;
+        }
+
+        /*
+         * ----------------------------------------
+         * 5. Result Cards
+         * ----------------------------------------
+         */
+        .results-container {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px; /* Increased gap */
+            opacity: 0;
+            transition: opacity 1s ease-in;
+            z-index: 4;
+            max-width: 80%; /* Wider results area */
+        }
+
+        .product-card {
+            background-color: #fce4ec; 
+            padding: 15px 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.5s ease-out;
+            border-left: 5px solid #e91e63;
+            cursor: default;
+        }
+        
+        .product-card:hover {
+            transform: translateY(0) scale(1.05);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .product-card strong {
+            display: block;
+            color: #ad1457;
+            margin-bottom: 5px;
+            font-size: 1.2em;
+        }
+        
+        .price {
+            font-size: 1.6em; /* Larger price font */
+            color: #d81b60;
+            font-weight: bold;
+        }
+
+    </style>
+</head>
+<body>
+
+    <h1>Market Data Aggregation Demo (20 km Radius)</h1>
+
+    <div class="scene-container">
+        
+        <div class="radius-circle">
+            20 km radius
+        </div>
+
+        <div class="aggregate-circle" id="aggregator">
+            Data
+        </div>
+
+        <div class="results-container" id="results">
+            </div>
+
+    </div>
+
+    <script>
+        const NUM_POINTS = 40; // Increased points for a larger screen
+        const PRODUCTS = [
+            { name: "Teff", color: "#66bb6a" },
+            { name: "Tomato", color: "#ef5350" },
+            { name: "Onion", color: "#ffb300" },
+            { name: "Potato", color: "#795548" },
+            { name: "Banana", color: "#fdd835" },
+            { name: "Avocado", color: "#4caf50" }
+        ];
+
+        const scene = document.querySelector('.scene-container');
+        const aggregator = document.getElementById('aggregator');
+        const resultsContainer = document.getElementById('results');
+        const radiusCircle = document.querySelector('.radius-circle');
+
+        let step2Timeout, step3Timeout, step4Timeout;
+
+        // Function to get dynamic dimensions (important for responsive layout)
+        function getDimensions() {
+            const rect = scene.getBoundingClientRect();
+            return {
+                CENTER_X: rect.width / 2,
+                CENTER_Y: rect.height / 2,
+                RADIUS: radiusCircle.offsetWidth / 2
+            };
+        }
+
+
+        /**
+         * Step 1 & 2: Create and Animate Data Points
+         */
+        function startDataFlow() {
+            // Remove any existing points (important for resize)
+            document.querySelectorAll('.data-point').forEach(p => p.remove());
+
+            const { CENTER_X, CENTER_Y, RADIUS } = getDimensions();
+            const dataPoints = [];
+
+            // 1. Create Data Points
+            for (let i = 0; i < NUM_POINTS; i++) {
+                const point = document.createElement('div');
+                point.classList.add('data-point');
+                
+                const product = PRODUCTS[i % PRODUCTS.length];
+                point.style.backgroundColor = product.color;
+
+                // Initial position: outside the radius circle
+                const angle = Math.random() * 2 * Math.PI;
+                // Place points between 100px and 200px *beyond* the radius
+                const distance = RADIUS + Math.random() * 100 + 100; 
+                const startX = CENTER_X + distance * Math.cos(angle) - 7.5; 
+                const startY = CENTER_Y + distance * Math.sin(angle) - 7.5;
+
+                point.style.left = `${startX}px`;
+                point.style.top = `${startY}px`;
+                scene.appendChild(point);
+                dataPoints.push(point);
+            }
+
+            // Trigger Step 2: Movement to Center
+            step2Timeout = setTimeout(() => {
+                dataPoints.forEach((point, index) => {
+                    point.style.opacity = 1;
+                    
+                    const deltaX = CENTER_X - parseFloat(point.style.left) - 7.5;
+                    const deltaY = CENTER_Y - parseFloat(point.style.top) - 7.5;
+
+                    // Staggered start and application of the transform
+                    setTimeout(() => {
+                         point.style.transform = `translate(${deltaX}px, ${deltaY}px)`;
+                    }, index * 40); 
+                });
+
+                // Wait for the longest animation to finish (4 seconds) + buffer
+                step3Timeout = setTimeout(aggregateData, 4500); 
+            }, 500);
+        }
+
+
+        /**
+         * Step 3: Aggregation Effect
+         */
+        function aggregateData() {
+            const dataPoints = document.querySelectorAll('.data-point');
+
+            dataPoints.forEach(point => {
+                point.style.opacity = 0;
+            });
+            
+            // 1. Show and Scale up Aggregation Circle
+            aggregator.style.display = 'flex';
+            aggregator.style.opacity = 1;
+            aggregator.style.transform = 'scale(5)'; 
+            
+            // 2. Hide points from DOM
+            setTimeout(() => {
+                dataPoints.forEach(point => point.remove());
+            }, 500);
+
+            // 3. Scale down the Aggregation Circle
+            step4Timeout = setTimeout(() => {
+                aggregator.style.transform = 'scale(1)';
+                
+                // Proceed to display results
+                setTimeout(displayResults, 600);
+            }, 1000);
+        }
+
+
+        /**
+         * Step 4: Display Results
+         */
+        function displayResults() {
+            // Hide aggregation circle
+            aggregator.style.opacity = 0;
+            aggregator.style.transform = 'scale(0)';
+
+            // Show results container
+            resultsContainer.style.opacity = 1;
+
+            // Generate and insert product cards
+            PRODUCTS.forEach((product, index) => {
+                const price = (Math.random() * 100 + 50).toFixed(2);
+                
+                const card = document.createElement('div');
+                card.classList.add('product-card');
+                card.innerHTML = `
+                    <strong>${product.name}</strong>
+                    Average Price: <span class="price">$${price}</span> / kg
+                `;
+
+                resultsContainer.appendChild(card);
+
+                // Animate cards sliding/fading in sequentially
+                setTimeout(() => {
+                    card.style.opacity = 1;
+                    card.style.transform = 'translateY(0)';
+                }, index * 150);
+            });
+        }
+        
+        
+        /**
+         * Handle initialization and resize
+         */
+        let resizeTimer;
+        function initializeDemo() {
+            // Clear all previous timeouts and remove existing result cards
+            clearTimeout(step2Timeout);
+            clearTimeout(step3Timeout);
+            clearTimeout(step4Timeout);
+            resultsContainer.innerHTML = '';
+            aggregator.style.display = 'none';
+
+            // Start the demonstration sequence
+            startDataFlow();
+        }
+
+        // Initialize on load
+        window.addEventListener('load', initializeDemo);
+
+        // Reinitialize on resize to ensure correct centering
+        window.addEventListener('resize', () => {
+            clearTimeout(resizeTimer);
+            resizeTimer = setTimeout(initializeDemo, 300);
+        });
+
+    </script>
+
+</body>
+</html>

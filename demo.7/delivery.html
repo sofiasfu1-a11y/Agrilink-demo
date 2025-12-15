@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AGRILINK - Delivery Agent</title>
+    <link rel="stylesheet" href="styles/delivery.css">
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <h1 class="logo">🚚 AGRILINK Delivery</h1>
+            <nav class="nav">
+                <a href="index.html" class="nav-link">Home</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="main">
+        <div class="container">
+            <!-- Driver Info Header -->
+            <div class="driver-info-header">
+                <div class="driver-badge">
+                    <div class="driver-icon">🚚</div>
+                    <div class="driver-details">
+                        <div class="driver-id">Driver ID: <span id="driverId">DA001</span></div>
+                        <div class="driver-name">Name: <span id="driverName">Meles Delivery</span></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="dashboard-header">
+                <h2>Delivery Dashboard</h2>
+                <div class="stats">
+                    <div class="stat-card pending">
+                        <div class="stat-value" id="pendingCount">0</div>
+                        <div class="stat-label">Pending</div>
+                    </div>
+                    <div class="stat-card delivered">
+                        <div class="stat-value" id="deliveredCount">0</div>
+                        <div class="stat-label">Delivered</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="deliveries-section">
+                <h3>Pending Deliveries</h3>
+                <div id="deliveriesList" class="deliveries-list"></div>
+            </div>
+
+            <div class="deliveries-section">
+                <h3>Completed Deliveries</h3>
+                <div id="completedList" class="deliveries-list"></div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Delivery Confirmation Modal -->
+    <div id="confirmModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Confirm Delivery</h2>
+            <p class="modal-instruction">Enter verification codes to confirm delivery:</p>
+            
+            <div class="verification-form">
+                <div class="input-group">
+                    <label for="deliveryAgentIdInput" class="input-label">
+                        <span class="label-icon">🆔</span>
+                        Delivery Agent ID
+                        <span class="tooltip" title="Enter your delivery agent ID">ℹ️</span>
+                    </label>
+                    <input type="text" id="deliveryAgentIdInput" class="modal-input" placeholder="DA001">
+                </div>
+                
+                <div class="input-group">
+                    <label for="farmerCodeInput" class="input-label">
+                        <span class="label-icon">👨‍🌾</span>
+                        Farmer Code
+                        <span class="tooltip" title="Code received by farmer via SMS">ℹ️</span>
+                    </label>
+                    <input type="text" id="farmerCodeInput" class="modal-input" placeholder="9876" maxlength="4" pattern="[0-9]*" inputmode="numeric">
+                </div>
+                
+                <div class="input-group">
+                    <label for="buyerCodeInput" class="input-label">
+                        <span class="label-icon">🛒</span>
+                        Buyer Code
+                        <span class="tooltip" title="Code received by buyer at checkout">ℹ️</span>
+                    </label>
+                    <input type="text" id="buyerCodeInput" class="modal-input" placeholder="4321" maxlength="4" pattern="[0-9]*" inputmode="numeric">
+                </div>
+            </div>
+            
+            <div id="deliveryError" class="error-message"></div>
+            <div class="modal-actions">
+                <button class="btn-cancel" onclick="closeConfirmModal()">Cancel</button>
+                <button class="btn-confirm" onclick="confirmDelivery()">Confirm Delivery</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Success Notification -->
+    <div id="successToast" class="toast"></div>
+
+    <script src="shared/data.js"></script>
+    <script src="scripts/delivery.js"></script>
+</body>
+</html>
+

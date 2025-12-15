@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Farmer Registration</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f7f7f7;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .registration-container {
+      background-color: #ffffff;
+      padding: 30px 40px;
+      border-radius: 12px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+      width: 400px;
+    }
+
+    h2 {
+      text-align: center;
+      margin-bottom: 25px;
+      color: #2c3e50;
+    }
+
+    h3 {
+      margin-top: 20px;
+      color: #2c3e50;
+    }
+
+    label {
+      display: block;
+      margin-top: 15px;
+      margin-bottom: 5px;
+      font-weight: bold;
+      color: #34495e;
+    }
+
+    input[type="text"],
+    input[type="number"],
+    input[type="file"] {
+      width: 100%;
+      padding: 10px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      box-sizing: border-box;
+    }
+
+    input[type="file"] {
+      padding: 3px;
+    }
+
+    button {
+      margin-top: 25px;
+      width: 100%;
+      padding: 12px;
+      background-color: #27ae60;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    button:hover {
+      background-color: #2ecc71;
+    }
+
+    .saved-message {
+      display: none;
+      margin-top: 15px;
+      color: #27ae60;
+      text-align: center;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <div class="registration-container">
+    <h2>Farmer Registration</h2>
+    <form id="farmerForm">
+      <label for="name">Full Name</label>
+      <input type="text" id="name" required>
+
+      <label for="address">Address</label>
+      <input type="text" id="address" required>
+
+      <label for="town">Town</label>
+      <input type="text" id="town" required>
+
+      <label for="idNumber">ID Number</label>
+      <input type="text" id="idNumber" required>
+
+      <h3>Bank Account Information</h3>
+      <label for="bankName">Bank Name</label>
+      <input type="text" id="bankName" required>
+
+      <label for="accountHolder">Account Holder Name</label>
+      <input type="text" id="accountHolder" required>
+
+      <label for="accountNumber">Account Number</label>
+      <input type="text" id="accountNumber" required>
+
+      <label for="photo">Photo</label>
+      <input type="file" id="photo" accept="image/*" required>
+
+      <button type="submit">Confirm</button>
+
+      <div class="saved-message" id="savedMessage">Saved!</div>
+    </form>
+  </div>
+
+  <script>
+    const form = document.getElementById('farmerForm');
+    const savedMessage = document.getElementById('savedMessage');
+
+    form.addEventListener('submit', function(e) {
+      e.preventDefault();
+
+      // Here you could handle saving data to backend or shared JS data
+      const farmerData = {
+        name: document.getElementById('name').value,
+        address: document.getElementById('address').value,
+        town: document.getElementById('town').value,
+        idNumber: document.getElementById('idNumber').value,
+        bankName: document.getElementById('bankName').value,
+        accountHolder: document.getElementById('accountHolder').value,
+        accountNumber: document.getElementById('accountNumber').value,
+        photo: document.getElementById('photo').files[0]?.name || ''
+      };
+
+      console.log("Farmer data submitted:", farmerData); // for testing/demo
+
+      savedMessage.style.display = 'block';
+      form.reset();
+    });
+  </script>
+</body>
+</html>
